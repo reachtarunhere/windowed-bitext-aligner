@@ -3,7 +3,7 @@ import numpy as np
 from scoring import margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
 
 
-def CandidateGenerator(trg_max, window_size=5):
+def CandidateGenerator(trg_max, window_size):
     """ trg_max is len of trg sentences file"""
 
     half_margin = window_size//2
@@ -45,7 +45,7 @@ def SingleRecordMaker(src_lines, tgt_lines, get_score_fn):
     return prepare_single_record
 
 
-def scoring_matrix(emb_src, emb_tgt):
+def ScoringMatrix(emb_src, emb_tgt):
     return emb_scr @ emb_tgt.T
 
 
@@ -59,5 +59,7 @@ def read_texts(src, tgt):
     return open(src).readlines(), open(tgt).readlines()
 
 
-def main(src_path, tgt_path, src_emb_path=None, tgt_emb_path=None):
-    pass
+def main(src_path, tgt_path, src_emb_path=None, tgt_emb_path=None, window_size=5):
+    src_lines, tgt_lines = read_texts(src_path, tgt_path)
+    emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
+    scoring_matrix = ScoringMatrix(emb_src, emb_tgt)
