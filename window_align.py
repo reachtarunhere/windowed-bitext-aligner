@@ -27,19 +27,22 @@ def PairScoreFinder(dot_scores, get_candidate_fn):
     return get_score
 
 
-def SingleRecordMaker(src_lines, tgt_lines):
+def SingleRecordMaker(src_lines, tgt_lines, get_score_fn):
 
     sentence_scorers = [sentence_len_ratio]
     cos_scorers = [margin_second_largest,
                    margin_avg, ratio_second_largest, ratio_avg]
     # combined_scorers = [] -> maybe implemented in future
 
-    def prepare_single_record(src_i, tgt_i, candidate_scores):
+    def prepare_single_record(src_i, tgt_i):
         src_sent, tgt_sent = src_lines[src_i], tgt_lines[tgt_i]
         sent_scores = [f(src_sent, tgt_sent) for f in sentence_scorers]
-        cos_scores = [f(candidate_scores) for f in cos_scorers]
+        scores_src_i = get_score_fn(src_i)
+        cos_scores = [f(scores_src_i) for f in cos_scorers]
 
         return [src_i, tgt_i, scr_sent, tgt_sent] + sent_scores + cos_scores
+
+    return prepare_single_record
 
 
 def scoring_matrix(emb_src, emb_tgt):
@@ -54,3 +57,7 @@ def read_embed(filename):
 
 def read_texts(src, tgt):
     return open(src).readlines(), open(tgt).readlines()
+
+
+def main(src_path, tgt_path, src_emb_path=None, tgt_emb_path=None):
+    pass
