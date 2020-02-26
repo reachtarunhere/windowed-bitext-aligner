@@ -17,5 +17,5 @@ def ratio_second_largest(cos_scores):
     return sorted_scores[-1]/sorted_scores[-2]
 
 
-def cos_avg_ratio_margin(s1, s2, cos_scores):
-    pass
+def ratio_avg(cos_scores):
+    return cos_scores.max()/cos_scores.mean()
