@@ -62,9 +62,14 @@ def read_texts(src, tgt):
     return open(src).readlines(), open(tgt).readlines()
 
 
-def main(src_path, tgt_path, src_emb_path=None, tgt_emb_path=None, window_size=5):
+def main(src_path, tgt_path, output_file_path, src_emb_path=None, tgt_emb_path=None, window_size=5):
     src_lines, tgt_lines = read_texts(src_path, tgt_path)
     emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
     scoring_matrix = ScoringMatrix(emb_src, emb_tgt)
     get_cos_score_fn = CosScoreFinder(scoring_matrix,
                                       CandidateGenerator(len(tgt_lines), window_size))
+
+    aligned_dataframe = make_alignment_dataframe(
+        src_lines, tgt_lines, get_cos_score_fn)
+
+    aligned_dataframe.to_csv()
