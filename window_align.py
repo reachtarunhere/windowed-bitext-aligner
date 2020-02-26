@@ -53,6 +53,7 @@ def ScoringMatrix(emb_src, emb_tgt):
 
 
 def read_embed(filename):
+    dim = 1024
     X = np.fromfile(filename, dtype=np.float32, count=-1)
     X.resize(X.shape[0] // dim, dim)
     return X
