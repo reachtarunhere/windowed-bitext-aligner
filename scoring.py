@@ -12,5 +12,10 @@ def margin_avg(cos_scores):
     return max(cos_scores) - cos_scores.mean()
 
 
+def ratio_second_largest(cos_scores):
+    sorted_scores = np.sort(cos_scores)
+    return sorted_scores[-1]/sorted_scores[-2]
+
+
 def cos_avg_ratio_margin(s1, s2, cos_scores):
     pass
