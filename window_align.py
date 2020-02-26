@@ -1,5 +1,7 @@
 import numpy as np
 
+from scoring import margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
+
 
 def CandidateGenerator(trg_max, window_size=5):
     """ trg_max is len of trg sentences file"""
@@ -23,6 +25,21 @@ def PairScoreFinder(dot_scores, get_candidate_fn):
         return best_cand_index, candidate_scores
 
     return get_score
+
+
+def SingleRecordMaker(src_lines, tgt_lines):
+
+    sentence_scorers = [sentence_len_ratio]
+    cos_scorers = [margin_second_largest,
+                   margin_avg, ratio_second_largest, ratio_avg]
+    # combined_scorers = [] -> maybe implemented in future
+
+    def prepare_single_record(src_i, tgt_i, candidate_scores):
+        src_sent, tgt_sent = src_lines[src_i], tgt_lines[tgt_i]
+        sent_scores = [f(src_sent, tgt_sent) for f in sentence_scorers]
+        cos_scores = [f(candidate_scores) for f in cos_scorers]
+
+        return [src_i, tgt_i, scr_sent, tgt_sent] + sent_scores + cos_scores
 
 
 def scoring_matrix(emb_src, emb_tgt):
