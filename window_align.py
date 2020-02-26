@@ -16,7 +16,7 @@ def CandidateGenerator(trg_max, window_size):
     return gen_candidate
 
 
-def PairScoreFinder(dot_scores, get_candidate_fn):
+def CosScoreFinder(dot_scores, get_candidate_fn):
 
     def get_score(src_i):
         candidate_indexes = get_candidate_fn(src_i)
@@ -27,7 +27,7 @@ def PairScoreFinder(dot_scores, get_candidate_fn):
     return get_score
 
 
-def SingleRecordMaker(src_lines, tgt_lines, get_score_fn):
+def make_alignment_dataframe(src_lines, tgt_lines, get_cos_score_fn):
 
     sentence_scorers = [sentence_len_ratio]
     cos_scorers = [margin_second_largest,
@@ -41,8 +41,6 @@ def SingleRecordMaker(src_lines, tgt_lines, get_score_fn):
         cos_scores = [f(scores_src_i) for f in cos_scorers]
 
         return [src_i, tgt_i, scr_sent, tgt_sent] + sent_scores + cos_scores
-
-    return prepare_single_record
 
 
 def ScoringMatrix(emb_src, emb_tgt):
@@ -63,3 +61,5 @@ def main(src_path, tgt_path, src_emb_path=None, tgt_emb_path=None, window_size=5
     src_lines, tgt_lines = read_texts(src_path, tgt_path)
     emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
     scoring_matrix = ScoringMatrix(emb_src, emb_tgt)
+    get_cos_score_fn = CosScoreFinder(scoring_matrix,
+                                      CandidateGenerator(len(tgt_lines), window_size))
