@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 from scoring import margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
 
@@ -34,13 +35,17 @@ def make_alignment_dataframe(src_lines, tgt_lines, get_cos_score_fn):
                    margin_avg, ratio_second_largest, ratio_avg]
     # combined_scorers = [] -> maybe implemented in future
 
-    def prepare_single_record(src_i, tgt_i):
+    def prepare_single_record(src_i):
+        tgt_i, scores_src_i = get_score_fn(src_i)
         src_sent, tgt_sent = src_lines[src_i], tgt_lines[tgt_i]
         sent_scores = [f(src_sent, tgt_sent) for f in sentence_scorers]
-        scores_src_i = get_score_fn(src_i)
         cos_scores = [f(scores_src_i) for f in cos_scorers]
 
         return [src_i, tgt_i, scr_sent, tgt_sent] + sent_scores + cos_scores
+
+    complete_record = [prepare_single_record(i) for i in range(len(src_lines))]
+
+    return pd.DataFrame.from_records(complete_record)
 
 
 def ScoringMatrix(emb_src, emb_tgt):
