@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 import SessionState
+import base64
 
 from window_align import get_scoring_matrix_from_lines, make_alignment_dataframe
 from matchscoring import *
@@ -9,6 +10,18 @@ session = SessionState.get(src_lines=[], tgt_lines=[], df=None)
 
 st.title("Windowed LASER Aligner")
 st.text("By Tarun")
+
+
+def get_table_download_link(df):
+    """Generates a link allowing the data in a given panda dataframe to be downloaded
+    in:  dataframe
+    out: href string
+    """
+    csv = df.to_csv(index=False)
+    # some strings <-> bytes conversions necessary here
+    b64 = base64.b64encode(csv.encode()).decode()
+    href = f'<a href="data:file/csv;base64,{b64}">Right clock and download csv file</a>'
+    return href
 
 
 def get_alignment_df(src_lines, tgt_lines, src_lang="en", tgt_lang="en", window_size=5):
@@ -63,5 +76,7 @@ if display_view == 'Alignment Explorer':
                                       0.0, 1.0, value=1.0)
 
         st.table(session.df.sort_values(by=[sort_by], ascending=descending))
+        st.markdown(get_table_download_link(
+            session.df), unsafe_allow_html=True)
     else:
         st.write("Switch the Data Input Display to align text.")
