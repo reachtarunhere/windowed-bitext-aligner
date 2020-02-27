@@ -2,6 +2,8 @@ from embed import *
 import os
 import sys
 
+import numpy as np
+
 # get environment
 assert os.environ.get('LASER'), 'Please set the enviornment variable LASER'
 LASER = os.environ['LASER']
@@ -38,3 +40,14 @@ def tokenize_bpe_and_encode(sentences, token_lang, source_is_file=False):
         ifname = bpe_fname
 
         return ENCODER.encode_sentences(open(bpe_fname).readlines())
+
+
+def ScoringMatrix(emb_src, emb_tgt):
+    return emb_src @ emb_tgt.T
+
+
+def read_embed(filename):
+    dim = 1024
+    X = np.fromfile(filename, dtype=np.float32, count=-1)
+    X.resize(X.shape[0] // dim, dim)
+    return X

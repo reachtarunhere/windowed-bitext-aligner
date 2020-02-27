@@ -48,17 +48,6 @@ def make_alignment_dataframe(src_lines, tgt_lines, get_score_fn):
     return pd.DataFrame.from_records(complete_record)
 
 
-def ScoringMatrix(emb_src, emb_tgt):
-    return emb_src @ emb_tgt.T
-
-
-def read_embed(filename):
-    dim = 1024
-    X = np.fromfile(filename, dtype=np.float32, count=-1)
-    X.resize(X.shape[0] // dim, dim)
-    return X
-
-
 def read_texts(src, tgt):
     return open(src).readlines(), open(tgt).readlines()
 
