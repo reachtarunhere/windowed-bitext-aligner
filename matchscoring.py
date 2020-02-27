@@ -11,7 +11,7 @@ sys.path.append(LASER + '/source')
 
 from embed import *  # noqa
 
-ENCODER = SentenceEncoder(f'{LASER}/ models/bilstm.93langs.2018-12-26.pt',
+ENCODER = SentenceEncoder(f'{LASER}/models/bilstm.93langs.2018-12-26.pt',
                           'quicksort')
 
 
