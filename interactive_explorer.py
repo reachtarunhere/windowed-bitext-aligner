@@ -75,8 +75,18 @@ if display_view == 'Alignment Explorer':
         ratio_avg = st.sidebar.slider("Ratio Second Best Less Than",
                                       0.0, 1.0, value=1.0)
 
-        st.table(session.df.sort_values(by=[sort_by], ascending=descending))
-        st.markdown(get_table_download_link(
-            session.df), unsafe_allow_html=True)
+        df = session.df
+        df = df[
+            (df["Sentence Length Ratio"] <= sentence_len_ratio) &
+            (df["Match Score"] >= match_score) &
+            (df["Margin Second Best"] >= margin_second_best) &
+            (df["Margin Avg"] >= margin_avg) &
+            (df["Ratio Second Best"] <= ratio_second_best) &
+            (df["Ratio Avg"] <= ratio_avg)]
+
+        df = df.sort_values(by=[sort_by], ascending=descending)
+
+        st.table(df)
+        st.markdown(get_table_download_link(df), unsafe_allow_html=True)
     else:
         st.write("Switch the Data Input Display to align text.")
