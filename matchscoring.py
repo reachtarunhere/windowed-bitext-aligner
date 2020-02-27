@@ -8,8 +8,11 @@ LASER = os.environ['LASER']
 
 sys.path.append(LASER + '/source')
 
+ENCODER = SentenceEncoder(f'{LASER}/ models/bilstm.93langs.2018-12-26.pt',
+                          'quicksort')
 
-def tokenize_and_bpe(sentences, token_lang, source_is_file=False):
+
+def tokenize_bpe_and_encode(sentences, token_lang, source_is_file=False):
 
     with tempfile.TemporaryDirectory() as tmpdir:
 
@@ -34,4 +37,4 @@ def tokenize_and_bpe(sentences, token_lang, source_is_file=False):
                      over_write=False)
         ifname = bpe_fname
 
-        return open(bpe_fname).readlines()
+        return ENCODER.encode_sentences(open(bpe_fname).readlines())
