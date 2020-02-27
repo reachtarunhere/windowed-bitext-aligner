@@ -51,3 +51,9 @@ def read_embed(filename):
     X = np.fromfile(filename, dtype=np.float32, count=-1)
     X.resize(X.shape[0] // dim, dim)
     return X
+
+
+def get_scoring_matrix_from_lines(src_lines, tgt_lines, src_lang=en, tgt_lang=en):
+    emb_src = tokenize_bpe_and_encode(src_lines, src_lang)
+    emb_tgt = tokenize_bpe_and_encode(tgt_lines, tgt_lang)
+    return ScoringMatrix(emb_src, emb_tgt)
