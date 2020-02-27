@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from scoring import margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
+from metrics import margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
 
 
 def CandidateGenerator(trg_max, window_size):
@@ -17,7 +17,7 @@ def CandidateGenerator(trg_max, window_size):
     return gen_candidate
 
 
-def CosScoreFinder(dot_scores, get_candidate_fn):
+def DotScoreFinder(dot_scores, get_candidate_fn):
 
     def get_score(src_i):
         candidate_indexes = get_candidate_fn(src_i)
@@ -30,18 +30,18 @@ def CosScoreFinder(dot_scores, get_candidate_fn):
 
 def make_alignment_dataframe(src_lines, tgt_lines, get_score_fn):
 
-    sentence_scorers = [sentence_len_ratio]
-    cos_scorers = [margin_second_largest,
-                   margin_avg, ratio_second_largest, ratio_avg]
+    sentence_metric_fns = [sentence_len_ratio]
+    dot_metric_fns = [margin_second_largest,
+                      margin_avg, ratio_second_largest, ratio_avg]
     # combined_scorers = [] -> maybe implemented in future
 
     def prepare_single_record(src_i):
         tgt_i, scores_src_i = get_score_fn(src_i)
         src_sent, tgt_sent = src_lines[src_i], tgt_lines[tgt_i]
-        sent_scores = [f(src_sent, tgt_sent) for f in sentence_scorers]
-        cos_scores = [f(scores_src_i) for f in cos_scorers]
+        sent_metrics = [f(src_sent, tgt_sent) for f in sentence_metric_fns]
+        dot_metrics = [f(scores_src_i) for f in dot_metric_fns]
 
-        return [src_i, tgt_i, scr_sent, tgt_sent] + sent_scores + cos_scores
+        return [src_i, tgt_i, src_sent, tgt_sent] + sent_metrics + dot_metrics
 
     complete_record = [prepare_single_record(i) for i in range(len(src_lines))]
 
@@ -67,10 +67,12 @@ def main(src_path, tgt_path, output_file_path, src_emb_path=None, tgt_emb_path=N
     src_lines, tgt_lines = read_texts(src_path, tgt_path)
     emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
     scoring_matrix = ScoringMatrix(emb_src, emb_tgt)
-    get_cos_score_fn = CosScoreFinder(scoring_matrix,
-                                      CandidateGenerator(len(tgt_lines), window_size))
+    get_score_fn = DotScoreFinder(scoring_matrix,
+                                  CandidateGenerator(len(tgt_lines), window_size))
 
     aligned_dataframe = make_alignment_dataframe(
-        src_lines, tgt_lines, get_cos_score_fn)
+        src_lines, tgt_lines, get_score_fn)
 
-    aligned_dataframe.to_csv()
+    aligned_dataframe.to_csv(output_file_path)
+
+    return aligned_dataframe
