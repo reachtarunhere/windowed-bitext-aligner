@@ -28,7 +28,7 @@ def CosScoreFinder(dot_scores, get_candidate_fn):
     return get_score
 
 
-def make_alignment_dataframe(src_lines, tgt_lines, get_cos_score_fn):
+def make_alignment_dataframe(src_lines, tgt_lines, get_score_fn):
 
     sentence_scorers = [sentence_len_ratio]
     cos_scorers = [margin_second_largest,
@@ -49,7 +49,7 @@ def make_alignment_dataframe(src_lines, tgt_lines, get_cos_score_fn):
 
 
 def ScoringMatrix(emb_src, emb_tgt):
-    return emb_scr @ emb_tgt.T
+    return emb_src @ emb_tgt.T
 
 
 def read_embed(filename):
