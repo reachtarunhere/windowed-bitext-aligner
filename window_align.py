@@ -49,7 +49,12 @@ def make_alignment_dataframe(src_lines, tgt_lines, scoring_matrix, window_size):
 
     complete_record = [prepare_single_record(i) for i in range(len(src_lines))]
 
-    return pd.DataFrame.from_records(complete_record)
+    # hardcoded rn. Maybe fix later.
+    column_names = ["Src Index", "Tgt Index", "Source Sentence", "Target Sentence",
+                    "Sentence Length Ratio", "Margin Second Best", "Margin Avg",
+                    "Ratio Second Best", "Ratio Avg"]
+
+    return pd.DataFrame.from_records(complete_record, columns=column_names)
 
 
 def read_texts(src, tgt):
