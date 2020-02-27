@@ -20,7 +20,7 @@ def get_table_download_link(df):
     csv = df.to_csv(index=False)
     # some strings <-> bytes conversions necessary here
     b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}">Right clock and download csv file</a>'
+    href = f'<a href="data:file/csv;base64,{b64}">Right click and download csv file</a>'
     return href
 
 
@@ -84,9 +84,9 @@ if display_view == 'Alignment Explorer':
             (df["Ratio Second Best"] <= ratio_second_best) &
             (df["Ratio Avg"] <= ratio_avg)]
 
-        df = df.sort_values(by=[sort_by], ascending=descending)
+        df = df.sort_values(by=[sort_by], ascending=not descending)
 
-        st.table(df)
         st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+        st.table(df)
     else:
         st.write("Switch the Data Input Display to align text.")
