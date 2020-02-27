@@ -28,7 +28,10 @@ def DotScoreFinder(dot_scores, get_candidate_fn):
     return get_score
 
 
-def make_alignment_dataframe(src_lines, tgt_lines, get_score_fn):
+def make_alignment_dataframe(src_lines, tgt_lines, scoring_matrix, window_size):
+
+    get_score_fn = DotScoreFinder(scoring_matrix,
+                                  CandidateGenerator(len(tgt_lines), window_size))
 
     sentence_metric_fns = [sentence_len_ratio]
     dot_metric_fns = [margin_second_largest,
@@ -55,13 +58,3 @@ def read_texts(src, tgt):
 def main(src_path, tgt_path, output_file_path, src_emb_path=None, tgt_emb_path=None, window_size=5):
     src_lines, tgt_lines = read_texts(src_path, tgt_path)
     emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
-    scoring_matrix = ScoringMatrix(emb_src, emb_tgt)
-    get_score_fn = DotScoreFinder(scoring_matrix,
-                                  CandidateGenerator(len(tgt_lines), window_size))
-
-    aligned_dataframe = make_alignment_dataframe(
-        src_lines, tgt_lines, get_score_fn)
-
-    aligned_dataframe.to_csv(output_file_path)
-
-    return aligned_dataframe
