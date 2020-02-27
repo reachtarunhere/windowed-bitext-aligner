@@ -21,8 +21,8 @@ def margin_avg(cos_scores):
 
 def ratio_second_largest(cos_scores):
     sorted_scores = np.sort(cos_scores)
-    return sorted_scores[-1]/sorted_scores[-2]
+    return sorted_scores[-2]/sorted_scores[-1]
 
 
 def ratio_avg(cos_scores):
-    return cos_scores.max()/cos_scores.mean()
+    return cos_scores.mean()/cos_scores.max()
