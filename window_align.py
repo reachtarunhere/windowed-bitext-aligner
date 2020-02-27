@@ -66,14 +66,19 @@ def main(src_path, tgt_path, output_file_path, src_lang='en', tgt_lang='en',
 
     src_lines, tgt_lines = read_texts(src_path, tgt_path)
 
-    if src_path is not None and emb_path is not None:
+    if src_emb_path is not None and tgt_emb_path is not None:
         emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
         scoring_matrix = ScoringMatrix(emb_src, emb_tgt)
     else:
         scoring_matrix = get_scoring_matrix_from_lines(
-            src_line, tgt_lines, src_lang, tgt_lang)
+            src_lines, tgt_lines, src_lang, tgt_lang)
 
     alignment_df = make_alignment_dataframe(
         src_lines, tgt_lines, scoring_matrix, window_size)
 
-    alignment_df.to_csv(output_path)
+    alignment_df.to_csv(output_file_path)
+
+
+if __name__ == '__main__':
+    import plac
+    plac.call(main)
