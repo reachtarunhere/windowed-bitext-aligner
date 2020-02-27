@@ -21,7 +21,7 @@ def tokenize_bpe_and_encode(sentences, token_lang, source_is_file=False):
 
         if not source_is_file:
             sentence_file_name = os.path.join(tmpdir, 'sents')
-            open(sentence_file_name, "w").writelines(sentences)
+            open(sentence_file_name, "w").write('\n'.join(sentences) + '\n')
             ifname = sentence_file_name
 
         tok_fname = os.path.join(tmpdir, 'tok')
