@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from metrics import margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
+from matchscoring import read_embed, ScoringMatrix, get_scoring_matrix_from_lines
 
 
 def CandidateGenerator(trg_max, window_size):
@@ -55,6 +56,19 @@ def read_texts(src, tgt):
     return open(src).readlines(), open(tgt).readlines()
 
 
-def main(src_path, tgt_path, output_file_path, src_emb_path=None, tgt_emb_path=None, window_size=5):
+def main(src_path, tgt_path, output_file_path, src_lang='en', tgt_lang='en',
+         src_emb_path=None, tgt_emb_path=None, window_size=5):
+
     src_lines, tgt_lines = read_texts(src_path, tgt_path)
-    emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
+
+    if src_path is not None and emb_path is not None:
+        emb_src, emb_tgt = read_embed(src_emb_path), read_embed(tgt_emb_path)
+        scoring_matrix = ScoringMatrix(emb_src, emb_tgt)
+    else:
+        scoring_matrix = get_scoring_matrix_from_lines(
+            src_line, tgt_lines, src_lang, tgt_lang)
+
+    alignment_df = make_alignment_dataframe(
+        src_lines, tgt_lines, scoring_matrix, window_size)
+
+    alignment_df.to_csv(output_path)

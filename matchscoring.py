@@ -53,7 +53,7 @@ def read_embed(filename):
     return X
 
 
-def get_scoring_matrix_from_lines(src_lines, tgt_lines, src_lang=en, tgt_lang=en):
+def get_scoring_matrix_from_lines(src_lines, tgt_lines, src_lang, tgt_lang):
     emb_src = tokenize_bpe_and_encode(src_lines, src_lang)
     emb_tgt = tokenize_bpe_and_encode(tgt_lines, tgt_lang)
     return ScoringMatrix(emb_src, emb_tgt)
