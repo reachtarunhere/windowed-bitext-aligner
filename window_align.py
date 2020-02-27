@@ -45,7 +45,7 @@ def make_alignment_dataframe(src_lines, tgt_lines, scoring_matrix, window_size):
         sent_metrics = [f(src_sent, tgt_sent) for f in sentence_metric_fns]
         dot_metrics = [f(scores_src_i) for f in dot_metric_fns]
 
-        return [src_i, tgt_i, src_sent, tgt_sent] + sent_metrics + dot_metrics
+        return [src_i, tgt_i, src_sent.strip(), tgt_sent.strip()] + sent_metrics + dot_metrics
 
     complete_record = [prepare_single_record(i) for i in range(len(src_lines))]
 
