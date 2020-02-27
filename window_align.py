@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from metrics import margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
+from metrics import match_score, margin_second_largest, margin_avg, ratio_second_largest, ratio_avg, sentence_len_ratio
 from matchscoring import read_embed, ScoringMatrix, get_scoring_matrix_from_lines
 
 
@@ -35,7 +35,7 @@ def make_alignment_dataframe(src_lines, tgt_lines, scoring_matrix, window_size):
                                   CandidateGenerator(len(tgt_lines), window_size))
 
     sentence_metric_fns = [sentence_len_ratio]
-    dot_metric_fns = [margin_second_largest,
+    dot_metric_fns = [match_score, margin_second_largest,
                       margin_avg, ratio_second_largest, ratio_avg]
     # combined_scorers = [] -> maybe implemented in future
 
@@ -51,7 +51,7 @@ def make_alignment_dataframe(src_lines, tgt_lines, scoring_matrix, window_size):
 
     # hardcoded rn. Maybe fix later.
     column_names = ["Src Index", "Tgt Index", "Source Sentence", "Target Sentence",
-                    "Sentence Length Ratio", "Margin Second Best", "Margin Avg",
+                    "Sentence Length Ratio", "Match Score", "Margin Second Best", "Margin Avg",
                     "Ratio Second Best", "Ratio Avg"]
 
     return pd.DataFrame.from_records(complete_record, columns=column_names)
