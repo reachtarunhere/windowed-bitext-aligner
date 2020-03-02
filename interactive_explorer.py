@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import SessionState
 import base64
+import spacy
 
 from window_align import get_scoring_matrix_from_lines, make_alignment_dataframe
 from matchscoring import *
@@ -10,6 +11,9 @@ session = SessionState.get(src_lines=[], tgt_lines=[], df=None)
 
 st.title("Windowed LASER Aligner")
 st.text("By Tarun")
+
+# current segmenter is one for english can customize later
+nlp = spacy.load('en_core_web_sm')
 
 
 def get_table_download_link(df):
@@ -33,6 +37,11 @@ def get_alignment_df(src_lines, tgt_lines, src_lang="en", tgt_lang="en", window_
     return df
 
 
+def segment_sentences(para):
+    doc = nlp(para)
+    return [s.text.strip() for s in doc.sents if s.text.strip()]
+
+
 display_view = st.sidebar.selectbox(
     'Select Display',
     ('Data Input', 'Alignment Explorer'))
@@ -43,10 +52,16 @@ if display_view == 'Data Input':
     src_text_area = st.text_area('Source Sentences')
     tgt_text_area = st.text_area('Target Sentences')
     window_size = st.sidebar.slider("Window Size", 1, 100, value=5)
+    segment_sents = st.sidebar.checkbox('Segment Sentences', value=True)
 
     if st.button("Align"):
-        session.src_lines = src_text_area.splitlines()
-        session.tgt_lines = tgt_text_area.splitlines()
+        if segment_sents:
+            session.src_lines = segment_sentences(src_text_area)
+            session.tgt_lines = segment_sentences(tgt_text_area)
+        else:
+            session.src_lines = src_text_area.splitlines()
+            session.tgt_lines = tgt_text_area.splitlines()
+
         session.df = get_alignment_df(session.src_lines, session.tgt_lines,
                                       window_size=window_size)
         # st.balloons()
