@@ -49,8 +49,10 @@ display_view = st.sidebar.selectbox(
 
 if display_view == 'Data Input':
     st.subheader('Data Input')
-    src_text_area = st.text_area('Source Sentences')
-    tgt_text_area = st.text_area('Target Sentences')
+    src_text_area = st.text_area(
+        'Source Sentences', '\n'.join(session.src_lines))
+    tgt_text_area = st.text_area(
+        'Target Sentences', '\n'.join(session.tgt_lines))
     window_size = st.sidebar.slider("Window Size", 1, 100, value=5)
     segment_sents = st.sidebar.checkbox('Segment Sentences', value=True)
 
@@ -66,6 +68,10 @@ if display_view == 'Data Input':
                                       window_size=window_size)
         # st.balloons()
         st.write("Switch to the Alignment Explorer to view alignment")
+
+    if st.button("Clear Input"):
+        session.src_lines, session.tgt_lines = [], []
+        session.df = None
 
 
 if display_view == 'Alignment Explorer':
