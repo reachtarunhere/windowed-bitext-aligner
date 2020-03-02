@@ -42,11 +42,14 @@ if display_view == 'Data Input':
     st.subheader('Data Input')
     src_text_area = st.text_area('Source Sentences')
     tgt_text_area = st.text_area('Target Sentences')
+    window_size = st.sidebar.slider("Window Size", 1, 100, value=5)
+
     if st.button("Align"):
         session.src_lines = src_text_area.splitlines()
         session.tgt_lines = tgt_text_area.splitlines()
-        session.df = get_alignment_df(session.src_lines, session.tgt_lines)
-        st.balloons()
+        session.df = get_alignment_df(session.src_lines, session.tgt_lines,
+                                      window_size=window_size)
+        # st.balloons()
         st.write("Switch to the Alignment Explorer to view alignment")
 
 
