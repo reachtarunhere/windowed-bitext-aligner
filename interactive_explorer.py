@@ -37,9 +37,12 @@ def get_alignment_df(src_lines, tgt_lines, src_lang="en", tgt_lang="en", window_
     return df
 
 
-def segment_sentences(para):
-    doc = nlp(para)
-    return [s.text.strip() for s in doc.sents if s.text.strip()]
+def segment_sentences(lines):
+    all_sents = []
+    for l in lines:
+        doc = nlp(l)
+        all_sents += [s.text.strip() for s in doc.sents if s.text.strip()]
+    return all_sents
 
 
 display_view = st.sidebar.selectbox(
@@ -57,12 +60,11 @@ if display_view == 'Data Input':
     segment_sents = st.sidebar.checkbox('Segment Sentences', value=True)
 
     if st.button("Align"):
+        session.src_lines = src_text_area.splitlines()
+        session.tgt_lines = tgt_text_area.splitlines()
         if segment_sents:
-            session.src_lines = segment_sentences(src_text_area)
-            session.tgt_lines = segment_sentences(tgt_text_area)
-        else:
-            session.src_lines = src_text_area.splitlines()
-            session.tgt_lines = tgt_text_area.splitlines()
+            session.src_lines = segment_sentences(session.src_lines)
+            session.tgt_lines = segment_sentences(session.tgt_lines)
 
         session.df = get_alignment_df(session.src_lines, session.tgt_lines,
                                       window_size=window_size)
